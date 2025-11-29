@@ -171,7 +171,7 @@ function authenticateToken(req: any, res: any, next: any) {
   });
 }
 
-router.get("/api/dashboard", authenticateToken, async (req, res) => {
+router.get("/api/dashboard", async (req, res) => {
   try {
     const dashboardData = await storage.getDashboardData();
     res.json(dashboardData);
@@ -181,9 +181,9 @@ router.get("/api/dashboard", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/api/system/status", authenticateToken, (req, res) => {
+router.get("/api/system/status", authenticateToken, async (req, res) => {
   try {
-    const metrics = systemMonitor.getLatestMetrics();
+    const metrics = await storage.getCurrentSystemMetrics();
     const realMetrics = realSystemMonitor.getLatestMetrics();
     const threats = threatDetector.getActiveThreats();
     const flStatus = flCoordinator.getStatus();
@@ -211,7 +211,7 @@ router.get("/api/system/status", authenticateToken, (req, res) => {
   }
 });
 
-router.get("/api/threats", authenticateToken, (req, res) => {
+router.get("/api/threats", (req, res) => {
   try {
     const threats = threatDetector.getAllThreats();
     const stats = threatDetector.getThreatStats();
@@ -227,10 +227,14 @@ router.get("/api/threats", authenticateToken, (req, res) => {
   }
 });
 
-router.get("/api/network/metrics", authenticateToken, (req, res) => {
+router.get("/api/network/metrics", authenticateToken, async (req, res) => {
   try {
-    const metrics = networkMonitor.getLatestMetrics();
-    const topology = networkMonitor.getNetworkTopology();
+    const recentMetrics = await storage.getRecentNetworkMetrics(1);
+    const metrics = recentMetrics[0] || null;
+    const topology = {
+      nodes: [],
+      links: []
+    };
 
     res.json({
       metrics,

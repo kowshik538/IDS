@@ -13,7 +13,7 @@ export function PacketAnalysis({ packets }: PacketAnalysisProps) {
       hour: '2-digit', 
       minute: '2-digit', 
       second: '2-digit',
-      fractional: 3 
+      fractionalSecondDigits: 3 
     });
   };
 

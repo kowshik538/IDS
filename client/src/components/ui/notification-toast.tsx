@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, AlertType } from '@shared/schema';
+import { Alert } from '@shared/schema';
 
 interface NotificationToastProps {
   alerts: Alert[];
@@ -12,10 +12,10 @@ export function NotificationToast({ alerts }: NotificationToastProps) {
   useEffect(() => {
     if (!alerts || alerts.length === 0) return;
 
-    // Filter for high-priority, non-displayed alerts
+    // Filter for high-priority, non-displayed alerts based on type
     const newAlerts = alerts.filter(alert => 
       !displayedAlerts.has(alert.id) && 
-      (alert.severity === 'critical' || alert.severity === 'high')
+      (alert.type === 'critical' || alert.type === 'high')
     );
 
     if (newAlerts.length > 0) {
@@ -23,7 +23,11 @@ export function NotificationToast({ alerts }: NotificationToastProps) {
       const toShow = newAlerts.slice(0, 3);
 
       setVisibleToasts(prev => [...prev, ...toShow]);
-      setDisplayedAlerts(prev => new Set([...prev, ...toShow.map(a => a.id)]));
+      setDisplayedAlerts(prev => {
+        const next = new Set(prev);
+        toShow.forEach(a => next.add(a.id));
+        return next;
+      });
 
       // Auto-dismiss after 5 seconds
       toShow.forEach(alert => {
@@ -47,8 +51,8 @@ export function NotificationToast({ alerts }: NotificationToastProps) {
           key={alert.id}
           className={`
             max-w-sm p-4 rounded-lg shadow-lg transform transition-all duration-300
-            ${alert.severity === 'critical' ? 'bg-red-900 border-red-500' : 
-              alert.severity === 'high' ? 'bg-orange-900 border-orange-500' : 
+            ${alert.type === 'critical' ? 'bg-red-900 border-red-500' : 
+              alert.type === 'high' ? 'bg-orange-900 border-orange-500' : 
               'bg-yellow-900 border-yellow-500'}
             border-l-4 text-white animate-slide-in
           `}

@@ -11,7 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Shield, AlertTriangle, Search, Filter, Download, Eye, CheckCircle, XCircle } from "lucide-react";
 import { useState } from "react";
-import { Threat } from "@shared/schema";
+
+type ThreatEvent = any;
 
 export function ThreatLogs() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,16 +26,19 @@ export function ThreatLogs() {
 
   const { data: realTimeData, isConnected, sendMessage } = useWebSocket("/api/ws");
 
-  // Use real-time data if available
-  const threats = realTimeData?.threats?.allThreats || threatsData?.allThreats || [];
-  const activeThreats = realTimeData?.threats?.activeThreats || threatsData?.activeThreats || [];
+  // Use REST API as source of full threat list, with WebSocket providing live active threats when available
+  const threats: ThreatEvent[] = ((threatsData as any)?.threats as ThreatEvent[]) || [];
+  const activeThreatsFromWs: ThreatEvent[] = ((realTimeData as any)?.threats?.activeThreats as ThreatEvent[]) || [];
+  const activeThreats: ThreatEvent[] = activeThreatsFromWs.length > 0
+    ? activeThreatsFromWs
+    : threats.filter((t) => !t.mitigated);
 
   const handleMitigateThreat = (threatId: string) => {
     sendMessage({ type: 'mitigate_threat', payload: { threatId } });
   };
 
   const handleExportLogs = () => {
-    const csvData = threats.map(threat => ({
+    const csvData = threats.map((threat: ThreatEvent) => ({
       ID: threat.id,
       Type: threat.type,
       Severity: threat.severity,
@@ -60,7 +64,7 @@ export function ThreatLogs() {
   };
 
   // Filter threats based on search and filters
-  const filteredThreats = threats.filter((threat: Threat) => {
+  const filteredThreats = threats.filter((threat: ThreatEvent) => {
     const matchesSearch = searchTerm === "" || 
       threat.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       threat.source.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -189,7 +193,7 @@ export function ThreatLogs() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold cyber-success">
-                {threats.filter((t: Threat) => t.mitigated).length}
+                {threats.filter((t: ThreatEvent) => t.mitigated).length}
               </div>
               <div className="flex items-center mt-2">
                 <CheckCircle className="mr-1 h-4 w-4 text-green-500" />
@@ -204,7 +208,7 @@ export function ThreatLogs() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
-                {threats.filter((t: Threat) => t.severity === 'critical').length}
+                {threats.filter((t: ThreatEvent) => t.severity === 'critical').length}
               </div>
               <div className="flex items-center mt-2">
                 <XCircle className="mr-1 h-4 w-4 text-red-600" />
@@ -281,7 +285,7 @@ export function ThreatLogs() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {filteredThreats.slice(0, 10).map((threat: Threat) => (
+                  {filteredThreats.slice(0, 10).map((threat: ThreatEvent) => (
                     <div key={threat.id} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center space-x-4">
                         <div className="text-2xl">{getThreatTypeIcon(threat.type)}</div>
@@ -346,7 +350,7 @@ export function ThreatLogs() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {activeThreats.slice(0, 20).map((threat: Threat) => (
+                    {activeThreats.slice(0, 20).map((threat: ThreatEvent) => (
                       <TableRow key={threat.id}>
                         <TableCell>
                           <div className="flex items-center">
@@ -410,7 +414,7 @@ export function ThreatLogs() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredThreats.slice(0, 50).map((threat: Threat) => (
+                    {filteredThreats.slice(0, 50).map((threat: ThreatEvent) => (
                       <TableRow key={threat.id}>
                         <TableCell className="font-mono text-xs">
                           {threat.id.split('_').pop()}
@@ -469,7 +473,7 @@ export function ThreatLogs() {
                 <CardContent>
                   <div className="space-y-4">
                     {['critical', 'high', 'medium', 'low'].map(severity => {
-                      const count = threats.filter((t: Threat) => t.severity === severity).length;
+                      const count = threats.filter((t: ThreatEvent) => t.severity === severity).length;
                       const percentage = threats.length > 0 ? (count / threats.length) * 100 : 0;
                       return (
                         <div key={severity} className="flex items-center justify-between">
@@ -495,7 +499,7 @@ export function ThreatLogs() {
                 <CardContent>
                   <div className="space-y-4">
                     {['Network', 'Email', 'Web', 'USB', 'Social Engineering'].map(vector => {
-                      const count = threats.filter((t: Threat) => t.attackVector === vector).length;
+                      const count = threats.filter((t: ThreatEvent) => t.attackVector === vector).length;
                       const percentage = threats.length > 0 ? (count / threats.length) * 100 : 0;
                       return (
                         <div key={vector} className="flex items-center justify-between">

@@ -18,19 +18,14 @@ import {
   Wifi
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { LiveFLData } from '@shared/schema';
 
 interface FLDashboardProps {
-  flData?: {
-    isRunning: boolean;
-    currentRound: number;
-    modelAccuracy: number;
-    activeClients: number;
-    totalClients: number;
-  };
+  flData?: LiveFLData;
 }
 
 export function FLDashboard({ flData }: FLDashboardProps) {
-  const [isTraining, setIsTraining] = useState(flData?.isRunning || false);
+  const [isTraining, setIsTraining] = useState(false);
   const { toast } = useToast();
 
   const handleStartTraining = () => {
@@ -126,25 +121,25 @@ export function FLDashboard({ flData }: FLDashboardProps) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-500">
-                {flData?.currentRound || 156}
+                {flData?.trainingRound || 156}
               </div>
               <div className="text-sm text-muted-foreground">Training Round</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-500">
-                {((flData?.modelAccuracy || 0.973) * 100).toFixed(1)}%
+                {((flData?.overallAccuracy || 0.973) * 100).toFixed(1)}%
               </div>
               <div className="text-sm text-muted-foreground">Model Accuracy</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-500">
-                {flData?.activeClients || 4}
+                {flData?.activeClients?.length || 4}
               </div>
               <div className="text-sm text-muted-foreground">Active Clients</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-orange-500">
-                {flData?.totalClients || 5}
+                {flData?.participantCount || 5}
               </div>
               <div className="text-sm text-muted-foreground">Total Clients</div>
             </div>

@@ -1,6 +1,7 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { Server } from 'http';
 import { DashboardData } from '@shared/schema';
+import { storage } from './storage';
 
 export function setupWebSocket(server: Server) {
   const wss = new WebSocketServer({ 
@@ -63,7 +64,7 @@ export function setupWebSocket(server: Server) {
 
   // Broadcast updates to all connected clients every 5 seconds
   setInterval(() => {
-    broadcastDashboardUpdate(clients);
+    void broadcastDashboardUpdate(clients);
   }, 5000);
 
   wss.on('error', (error) => {
@@ -73,67 +74,13 @@ export function setupWebSocket(server: Server) {
   return wss;
 }
 
-function generateDashboardData(): DashboardData {
-  const now = new Date();
-  const threats = [];
-  const logs = [];
-
-  // Generate realistic threat data
-  for (let i = 0; i < Math.floor(Math.random() * 5) + 1; i++) {
-    threats.push({
-      id: `threat-${Date.now()}-${i}`,
-      timestamp: now.toISOString(),
-      type: ['malware', 'ddos', 'brute_force', 'anomaly'][Math.floor(Math.random() * 4)],
-      severity: ['low', 'medium', 'high', 'critical'][Math.floor(Math.random() * 4)],
-      source: `192.168.1.${Math.floor(Math.random() * 255)}`,
-      description: `Suspicious activity detected from external source`,
-      confidence: Math.random() * 100
-    });
-  }
-
-  // Generate log entries
-  for (let i = 0; i < Math.floor(Math.random() * 10) + 5; i++) {
-    logs.push({
-      id: `log-${Date.now()}-${i}`,
-      timestamp: now.toISOString(),
-      level: ['info', 'warning', 'error'][Math.floor(Math.random() * 3)],
-      message: `System event logged at ${now.toLocaleTimeString()}`,
-      source: 'AgisFL-Core'
-    });
-  }
-
-  return {
-    timestamp: now.toISOString(),
-    systemHealth: {
-      cpu: Math.random() * 100,
-      memory: Math.random() * 100,
-      disk: Math.random() * 100,
-      network: Math.random() * 100
-    },
-    threatCount: threats.length,
-    activeConnections: Math.floor(Math.random() * 50) + 10,
-    packetsAnalyzed: Math.floor(Math.random() * 10000) + 5000,
-    federatedNodes: Math.floor(Math.random() * 10) + 5,
-    modelAccuracy: 0.85 + Math.random() * 0.1,
-    threats,
-    logs,
-    networkMetrics: {
-      bandwidth: Math.random() * 1000,
-      latency: Math.random() * 100,
-      packetLoss: Math.random() * 5
-    },
-    federatedLearning: {
-      activeNodes: Math.floor(Math.random() * 10) + 5,
-      trainingRounds: Math.floor(Math.random() * 100) + 50,
-      modelVersion: '2.1.0',
-      lastUpdate: now.toISOString()
-    }
-  };
+async function generateDashboardData(): Promise<DashboardData> {
+  return storage.getDashboardData();
 }
 
-function sendDashboardUpdate(ws: WebSocket) {
+async function sendDashboardUpdate(ws: WebSocket) {
   if (ws.readyState === WebSocket.OPEN) {
-    const data = generateDashboardData();
+    const data = await generateDashboardData();
     ws.send(JSON.stringify({
       type: 'dashboard_update',
       data
@@ -141,8 +88,8 @@ function sendDashboardUpdate(ws: WebSocket) {
   }
 }
 
-function broadcastDashboardUpdate(clients: Set<WebSocket>) {
-  const data = generateDashboardData();
+async function broadcastDashboardUpdate(clients: Set<WebSocket>) {
+  const data = await generateDashboardData();
   const message = JSON.stringify({
     type: 'dashboard_update',
     data

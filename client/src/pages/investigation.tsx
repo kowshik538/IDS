@@ -18,7 +18,6 @@ import {
   Database,
   Network,
   Fingerprint,
-  Magnify,
   Target
 } from 'lucide-react';
 
@@ -209,7 +208,7 @@ export default function Investigation() {
           <Card className="bg-slate-800 border-slate-700">
             <CardContent className="flex items-center p-6">
               <div className="flex items-center space-x-2">
-                <Magnify className="h-8 w-8 text-blue-500" />
+                <Search className="h-8 w-8 text-blue-500" />
                 <div>
                   <p className="text-2xl font-bold text-white">
                     {investigations.filter(i => i.status === 'Active').length}
@@ -275,7 +274,7 @@ export default function Investigation() {
             <Card className="bg-slate-800 border-slate-700">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
-                  <Magnify className="h-5 w-5" />
+                  <Search className="h-5 w-5" />
                   Active Investigations
                 </CardTitle>
                 <CardDescription className="text-slate-400">

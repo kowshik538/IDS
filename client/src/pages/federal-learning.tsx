@@ -7,6 +7,7 @@ import { Activity, Users, Brain, Shield, TrendingUp, Server } from "lucide-react
 
 export function FederalLearning() {
   const { data, isConnected, error } = useWebSocket('/api/ws');
+  const fl: any = (data as any)?.fl;
 
   const federatedNodes = [
     {
@@ -47,7 +48,7 @@ export function FederalLearning() {
     }
   };
 
-  const overallAccuracy = data?.federatedLearning?.modelVersion ? 
+  const overallAccuracy = fl?.currentModel ? 
     (federatedNodes.reduce((sum, node) => sum + node.modelAccuracy, 0) / federatedNodes.length) * 100 : 87;
 
   return (
@@ -79,7 +80,7 @@ export function FederalLearning() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data?.federatedLearning?.activeNodes || federatedNodes.length}</div>
+            <div className="text-2xl font-bold">{fl?.activeClients?.length || federatedNodes.length}</div>
             <p className="text-xs text-muted-foreground">Participating in training</p>
           </CardContent>
         </Card>
@@ -101,7 +102,7 @@ export function FederalLearning() {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data?.federatedLearning?.trainingRounds || 127}</div>
+            <div className="text-2xl font-bold">{fl?.trainingRound || 127}</div>
             <p className="text-xs text-muted-foreground">Total completed rounds</p>
           </CardContent>
         </Card>
@@ -179,9 +180,9 @@ export function FederalLearning() {
           <div>
             <div className="flex justify-between text-sm mb-2">
               <span>Training Progress</span>
-              <span>Round {data?.federatedLearning?.trainingRounds || 127}/200</span>
+              <span>Round {fl?.trainingRound || 127}/200</span>
             </div>
-            <Progress value={((data?.federatedLearning?.trainingRounds || 127) / 200) * 100} className="h-2" />
+            <Progress value={((fl?.trainingRound || 127) / 200) * 100} className="h-2" />
           </div>
 
           <div>
