@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation } from 'wouter';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +9,7 @@ import { Shield, Lock, User, AlertCircle, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export function Login() {
-  const [, setLocation] = useLocation();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [showMFA, setShowMFA] = useState(false);
   const [mfaCode, setMfaCode] = useState('');
@@ -58,7 +58,7 @@ export function Login() {
           title: "Login Successful",
           description: "Welcome to AgisFL Dashboard",
         });
-        setLocation('/dashboard');
+        navigate('/dashboard');
       } else {
         throw new Error(data.message || 'Login failed');
       }
@@ -94,7 +94,7 @@ export function Login() {
           title: "Guest Access Granted",
           description: "Welcome to AgisFL Demo",
         });
-        setLocation('/dashboard');
+        navigate('/dashboard');
       } else {
         throw new Error(data.message || 'Guest login failed');
       }

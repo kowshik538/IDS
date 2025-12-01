@@ -44,6 +44,7 @@ export function TopBar() {
     { label: "Federal Learning", path: "/federal-learning" },
     { label: "Threat Logs", path: "/threat-logs" },
     { label: "Network Logs", path: "/network-logs" },
+    { label: "Settings", path: "/settings" },
   ];
 
   return (
@@ -109,7 +110,7 @@ export function TopBar() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/settings')}>
                 <Settings className="mr-2 h-4 w-4" />
                 Settings
               </DropdownMenuItem>
