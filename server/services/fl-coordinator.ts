@@ -59,7 +59,7 @@ export class FederatedLearningCoordinator {
     }
   }
 
-  private async updateFLStatus() {
+  async updateFLStatus() {
     try {
       if (Math.random() < 0.3) {
         this.trainingRound++;
@@ -172,6 +172,16 @@ export class FederatedLearningCoordinator {
 
   async getClients() {
     return await storage.getFLClients();
+  }
+
+  async deployCurrentModel() {
+    try {
+      const model = await storage.getCurrentFLModel();
+      return model;
+    } catch (error) {
+      console.error('Error deploying current FL model:', error);
+      throw error;
+    }
   }
 }
 

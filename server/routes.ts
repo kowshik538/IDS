@@ -265,6 +265,38 @@ router.get("/api/federated-learning/status", authenticateToken, (req, res) => {
   }
 });
 
+router.post("/api/federated-learning/train-round", authenticateToken, async (req, res) => {
+  try {
+    await flCoordinator.updateFLStatus();
+    const status = flCoordinator.getStatus();
+
+    res.json({
+      success: true,
+      status,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error("FL train round error:", error);
+    res.status(500).json({ message: "Failed to start training round" });
+  }
+});
+
+router.post("/api/federated-learning/deploy", authenticateToken, async (req, res) => {
+  try {
+    const model = await flCoordinator.deployCurrentModel();
+
+    res.json({
+      success: true,
+      message: model ? "Model deployed successfully" : "No model available to deploy",
+      model,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error("FL deploy error:", error);
+    res.status(500).json({ message: "Failed to deploy model" });
+  }
+});
+
 router.get("/api/system/metrics", authenticateToken, (req, res) => {
   try {
     const realMetrics = realSystemMonitor.getLatestMetrics();

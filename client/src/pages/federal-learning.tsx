@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -5,8 +6,12 @@ import { Progress } from "@/components/ui/progress";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { Activity, Users, Brain, Shield, TrendingUp, Server } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
+import { useToast } from "@/hooks/use-toast";
 
 export function FederalLearning() {
+  const [isTraining, setIsTraining] = useState(false);
+  const [isDeploying, setIsDeploying] = useState(false);
+  const { toast } = useToast();
   const { data, isConnected, error } = useWebSocket('/api/ws');
   const fl: any = (data as any)?.fl;
 
@@ -46,6 +51,74 @@ export function FederalLearning() {
       case 'training': return 'bg-blue-500';
       case 'idle': return 'bg-yellow-500';
       default: return 'bg-gray-500';
+    }
+  };
+
+  const handleStartTraining = async () => {
+    if (isTraining) return;
+    setIsTraining(true);
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : null;
+      const response = await fetch("/api/federated-learning/train-round", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to start training round");
+      }
+
+      const result = await response.json();
+      toast({
+        title: "Training Round Started",
+        description: `Round ${result?.status?.currentRound ?? ""} triggered successfully`,
+      });
+    } catch (err: any) {
+      console.error("Start training error", err);
+      toast({
+        title: "Failed to start training",
+        description: err?.message || "Unable to start training round",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTraining(false);
+    }
+  };
+
+  const handleDeployModel = async () => {
+    if (isDeploying) return;
+    setIsDeploying(true);
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : null;
+      const response = await fetch("/api/federated-learning/deploy", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to deploy model");
+      }
+
+      const result = await response.json();
+      toast({
+        title: "Model Deployment",
+        description: result?.message || "Model deployed successfully",
+      });
+    } catch (err: any) {
+      console.error("Deploy model error", err);
+      toast({
+        title: "Failed to deploy model",
+        description: err?.message || "Unable to deploy model",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeploying(false);
     }
   };
 
@@ -198,13 +271,22 @@ export function FederalLearning() {
             </div>
 
             <div className="flex gap-4 pt-4">
-              <Button className="flex items-center gap-2">
+              <Button
+                className="flex items-center gap-2"
+                onClick={handleStartTraining}
+                disabled={isTraining || !isConnected}
+              >
                 <Shield className="h-4 w-4" />
-                Start Training Round
+                {isTraining ? "Starting..." : "Start Training Round"}
               </Button>
-              <Button variant="outline" className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                className="flex items-center gap-2"
+                onClick={handleDeployModel}
+                disabled={isDeploying || !isConnected}
+              >
                 <Brain className="h-4 w-4" />
-                Deploy Model
+                {isDeploying ? "Deploying..." : "Deploy Model"}
               </Button>
             </div>
           </CardContent>

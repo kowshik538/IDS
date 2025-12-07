@@ -299,7 +299,7 @@ def index():
                 <button class="btn" onclick="startMonitoring()">Start System</button>
                 <button class="btn" onclick="stopMonitoring()">Stop System</button>
                 <button class="btn" onclick="runTests()">Run Tests</button>
-                <a href="http://localhost:5000" class="btn">Dashboard</a>
+                <a href="http://localhost:5000/dashboard" class="btn">Dashboard</a>
             </div>
         </div>
         
