@@ -48,28 +48,42 @@ export function TopBar() {
   ];
 
   return (
-    <header className="border-b border-border bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
-      <div className="flex h-16 items-center px-6">
-        <div className="flex items-center space-x-4">
-          <Shield className="h-8 w-8 text-blue-500" />
-          <h1 className="text-xl font-bold cyber-text-primary cursor-pointer" onClick={() => navigate('/dashboard')}>
-            AgisFL
-          </h1>
-          <Badge variant="outline" className="text-xs">
+    <header className="border-b border-border bg-card/5 backdrop-blur supports-[backdrop-filter]:bg-card/10 cyber-topbar-shadow">
+      <div className="flex h-16 items-center px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center space-x-3 sm:space-x-4">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 via-sky-400 to-cyan-400 shadow-lg shadow-sky-500/40 ring-2 ring-sky-300/40">
+            <Shield className="h-5 w-5 text-white" />
+          </div>
+          <div className="flex flex-col">
+            <h1
+              className="text-lg sm:text-xl font-semibold tracking-tight cyber-text-primary cursor-pointer leading-tight"
+              onClick={() => navigate('/dashboard')}
+            >
+              AgisFL
+            </h1>
+            <p className="text-[11px] sm:text-xs uppercase tracking-[0.16em] text-sky-300/80">
+              Security Intelligence Console
+            </p>
+          </div>
+          <Badge variant="outline" className="hidden sm:inline-flex text-[10px] sm:text-xs border-sky-400/50 text-sky-100 bg-sky-500/10">
             v2.0 Enterprise
           </Badge>
         </div>
 
-        <div className="ml-auto flex items-center space-x-4">
+        <div className="ml-auto flex items-center space-x-2 sm:space-x-3">
           {/* Navigation Menu for larger screens */}
-          <nav className="hidden md:flex items-center space-x-2">
+          <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">
             {navItems.map((item) => (
               <Button
                 key={item.path}
                 variant={isActivePath(item.path) ? "default" : "ghost"}
                 size="sm"
                 onClick={() => handleNavigation(item.path)}
-                className={isActivePath(item.path) ? "bg-blue-600 text-white" : ""}
+                className={`cyber-nav-pill relative px-3 lg:px-4 text-xs lg:text-sm font-medium transition-all duration-200 ${
+                  isActivePath(item.path)
+                    ? 'bg-sky-500/90 text-white shadow-[0_0_20px_rgba(56,189,248,0.7)] hover:bg-sky-400'
+                    : 'text-slate-200/80 hover:text-white hover:bg-slate-800/60'
+                }`}
               >
                 {item.label}
               </Button>
@@ -79,7 +93,7 @@ export function TopBar() {
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="relative">
+              <Button variant="ghost" size="sm" className="relative hover:bg-slate-800/70 text-slate-200">
                 <Bell className="h-4 w-4" />
                 {notifications.length > 0 && (
                   <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center text-xs">
@@ -104,7 +118,7 @@ export function TopBar() {
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="hover:bg-slate-800/70 text-slate-200">
                 <User className="h-4 w-4 mr-2" />
                 Admin
               </Button>

@@ -28,13 +28,15 @@ export function Dashboard() {
 
   if (error) {
     return (
-      <div className="min-h-screen cyber-gradient flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-500 text-lg mb-4">Connection Error</div>
-          <p className="text-gray-300">Failed to connect to backend services</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      <div className="min-h-screen cyber-gradient flex items-center justify-center px-4">
+        <div className="glass-panel-soft max-w-md w-full p-8 text-center space-y-4">
+          <div className="text-red-400 text-lg font-semibold">Connection Error</div>
+          <p className="cyber-text-muted text-sm">
+            Failed to connect to backend services. Please check your network connection and try again.
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-2 px-4 py-2 rounded-md bg-sky-500 hover:bg-sky-400 text-white text-sm font-medium transition-colors"
           >
             Retry
           </button>
@@ -45,23 +47,30 @@ export function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen cyber-gradient flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="cyber-text-primary text-lg">Initializing Cybersecurity Command Center...</p>
+      <div className="min-h-screen cyber-gradient flex items-center justify-center px-4 relative overflow-hidden">
+        <div className="cyber-grid-overlay" />
+        <div className="glass-panel-soft max-w-md w-full p-8 text-center space-y-4">
+          <div className="w-14 h-14 border-4 border-sky-500/70 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+          <p className="cyber-text-primary text-lg font-medium">
+            Initializing Cybersecurity Command Center...
+          </p>
+          <p className="cyber-text-muted text-xs">
+            Establishing secure channels and synchronizing federated nodes.
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen cyber-gradient">
+    <div className="min-h-screen cyber-gradient relative overflow-hidden">
+      <div className="cyber-grid-overlay" />
       <TopBar />
       
       <div className="flex">
         {/* Sidebar */}
-        <aside className="w-80 bg-card border-r border-border p-6 min-h-screen">
-          <div className="space-y-6">
+        <aside className="w-80 hidden lg:block border-r border-border/60 px-4 py-6 min-h-[calc(100vh-4rem)]">
+          <div className="space-y-6 glass-panel-soft h-full p-4 overflow-y-auto">
             <SystemStatus data={data?.system} />
             <ActiveThreats threats={data?.threats?.activeThreats || []} />
             <FederatedLearning flData={data?.fl} />
@@ -69,7 +78,7 @@ export function Dashboard() {
         </aside>
 
         {/* Main Dashboard */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
             <NetworkMetrics data={data?.network} />
             <ThreatDetection data={data?.threats} />

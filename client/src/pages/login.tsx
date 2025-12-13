@@ -119,18 +119,20 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen cyber-gradient flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-card/95 backdrop-blur">
+    <div className="min-h-screen cyber-gradient flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="cyber-grid-overlay" />
+      <div className="cyber-login-orbit" />
+      <Card className="w-full max-w-md glass-panel relative z-10">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="p-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600">
+            <div className="p-3 rounded-2xl bg-gradient-to-tr from-sky-500 via-cyan-400 to-emerald-400 shadow-lg shadow-sky-500/50 ring-2 ring-sky-300/60">
               <Shield className="h-8 w-8 text-white" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold cyber-text-primary">
+          <CardTitle className="text-2xl font-bold cyber-text-primary tracking-tight">
             AgisFL Security Center
           </CardTitle>
-          <CardDescription className="text-muted-foreground">
+          <CardDescription className="text-muted-foreground text-sm">
             Federated Learning Intrusion Detection System
           </CardDescription>
         </CardHeader>
@@ -183,7 +185,7 @@ export function Login() {
 
               <Button 
                 type="submit" 
-                className="w-full cyber-button-primary" 
+                className="w-full cyber-button-primary shadow-[0_0_24px_rgba(56,189,248,0.65)]" 
                 disabled={isLoading}
               >
                 {isLoading ? "Authenticating..." : "Sign In"}
@@ -194,7 +196,7 @@ export function Login() {
                   type="button"
                   variant="outline"
                   onClick={fillDemoCredentials}
-                  className="text-xs"
+                  className="text-xs border-dashed border-sky-400/70 text-sky-200 hover:bg-sky-500/10"
                 >
                   Fill Demo Credentials
                 </Button>
